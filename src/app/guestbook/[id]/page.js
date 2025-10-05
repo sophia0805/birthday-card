@@ -52,6 +52,11 @@ export default function GuestbookPage({ params }) {
     }
   };
 
+  const shareGuestbook = async () => {
+    const shareUrl = `${window.location.origin}/guestbook/${id}/share`;
+    navigator.clipboard.writeText(shareUrl);
+  };
+
   if (loading) {
     return (
       <div style={{ 
@@ -99,6 +104,24 @@ export default function GuestbookPage({ params }) {
         }}>
           ID: {id}
         </p>
+        <button 
+            onClick={shareGuestbook}
+            style={{
+              padding: "1.5vh 1.2vw",
+              backgroundColor: "#A8CCC9",
+              color: "white",
+              border: "none",
+              borderRadius: "3px",
+              cursor: "pointer",
+              fontSize: "1rem",
+              fontWeight: "400",
+              position: "absolute",
+              right: "2vw",
+              top: "2vh"
+            }}
+          >
+            <img src="/clink.png" alt="Share" style={{ width: "3vh", height: "3vh" }} />
+          </button>
       </div>
       <div style={{
         width: "50vw",
@@ -175,7 +198,8 @@ export default function GuestbookPage({ params }) {
               fontSize: "1rem",
               fontWeight: "400",
               width: "auto",
-              minWidth: "8vw"
+              minWidth: "8vw",
+              marginRight: "1vw"
             }}
           >
             Submit
@@ -238,7 +262,10 @@ export default function GuestbookPage({ params }) {
                 fontSize: "0.95rem", 
                 lineHeight: "1.5",
                 color: "#444",
-                fontFamily: "Arial, sans-serif"
+                fontFamily: "Arial, sans-serif",
+                wordWrap: "break-word",
+                overflowWrap: "break-word",
+                whiteSpace: "pre-wrap"
               }}>
                 "{entry.message}"
               </p>

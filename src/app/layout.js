@@ -14,6 +14,11 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Birthday Guestbook",
   description: "Create a guestbook for a birthday and send it to them with signatures from their friends!",
+  icons: {
+    icon: '/cake.png',
+    shortcut: '/cake.png',
+    apple: '/cake.png',
+  },
 };
 
 export default function RootLayout({ children }) {
