@@ -7,7 +7,6 @@ export default function GuestbookPage({ params }) {
   const [messageInput, setMessageInput] = useState("");
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [imageData, setImageData] = useState(null);
   
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -33,7 +32,7 @@ export default function GuestbookPage({ params }) {
   const addEntry = async () => {
     if (!nameInput.trim() || !messageInput.trim()) return;
     
-    let currentImageData = null;
+    let imageUrl = null;
     if (canvasRef.current) {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
@@ -55,7 +54,16 @@ export default function GuestbookPage({ params }) {
       }
       
       if (hasContent) {
-        currentImageData = canvas.toDataURL('image/png');
+        const canvasDataUrl = canvas.toDataURL('image/png');
+        const imageResponse = await fetch('/api/image', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ imageData: canvasDataUrl })
+        });
+        const imageData = await imageResponse.json();
+        imageUrl = imageData.mediaUrl;
       }
     }
     
@@ -63,7 +71,7 @@ export default function GuestbookPage({ params }) {
       name: nameInput.trim(),
       message: messageInput.trim(),
       timestamp: new Date().toISOString(),
-      image: currentImageData
+      image: imageUrl
     };
     
     const response = await fetch(`/api/guestbook/${id}`, {
@@ -77,7 +85,6 @@ export default function GuestbookPage({ params }) {
     setEntries(data.entries);
     setNameInput("");
     setMessageInput("");
-    setImageData(null);
   };
 
   const shareGuestbook = async () => {

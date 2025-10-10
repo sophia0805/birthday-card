@@ -1,4 +1,7 @@
+import { NextResponse } from "next/server";
+
 export async function POST(request) {
+  const { imageData } = await request.json();
   const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
   const params = new URLSearchParams();
   params.append('image', base64Data);
