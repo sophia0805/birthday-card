@@ -1,7 +1,10 @@
 import { MongoClient } from 'mongodb';
 
 const uri = process.env.MONGODB_URI;
-const options = {};
+const options = {
+  tls: true,
+  tlsAllowInvalidCertificates: true, // use only if you're connecting to dev/self-hosted without a CA
+};
 
 let client;
 let clientPromise;
@@ -11,6 +14,5 @@ if (!global._mongoClientPromise) {
   global._mongoClientPromise = client.connect();
 }
 clientPromise = global._mongoClientPromise;
-//clientPromise = client.connect();
 
 export default clientPromise;

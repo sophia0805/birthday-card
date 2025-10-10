@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function GuestbookPage({ params }) {
   const [id, setId] = useState(null);
@@ -7,6 +7,13 @@ export default function GuestbookPage({ params }) {
   const [messageInput, setMessageInput] = useState("");
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [imageData, setImageData] = useState(null);
+  
+  const canvasRef = useRef(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [color, setColor] = useState('#000000');
+  const [brushSize, setBrushSize] = useState(5);
+  const [context, setContext] = useState(null);
 
   useEffect(() => {
     params.then(({ id }) => {
@@ -19,10 +26,6 @@ export default function GuestbookPage({ params }) {
             setEntries(data.entries);
           }
           setLoading(false);
-        })
-        .catch(error => {
-          console.error("Error loading guestbook:", error);
-          setLoading(false);
         });
     });
   }, [params]);
@@ -30,10 +33,37 @@ export default function GuestbookPage({ params }) {
   const addEntry = async () => {
     if (!nameInput.trim() || !messageInput.trim()) return;
     
+    let currentImageData = null;
+    if (canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
+      
+      let hasContent = false;
+      for (let i = 0; i < pixels.length; i += 4) {
+        const r = pixels[i];
+        const g = pixels[i + 1];
+        const b = pixels[i + 2];
+        const a = pixels[i + 3];
+        
+        if (!(r === 255 && g === 255 && b === 255 && a === 255) && a > 0) {
+          hasContent = true;
+          break;
+        }
+      }
+      
+      if (hasContent) {
+        currentImageData = canvas.toDataURL('image/png');
+      }
+    }
+    
     const newEntry = {
       name: nameInput.trim(),
       message: messageInput.trim(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      image: currentImageData
     };
     
     const response = await fetch(`/api/guestbook/${id}`, {
@@ -49,12 +79,94 @@ export default function GuestbookPage({ params }) {
       setEntries(data.entries);
       setNameInput("");
       setMessageInput("");
+      setImageData(null);
+    }
+  };
+
+  const captureCanvasImage = () => {
+    if (canvasRef.current) {
+      const canvas = canvasRef.current;
+      const dataURL = canvas.toDataURL('image/png');
+      setImageData(dataURL);
     }
   };
 
   const shareGuestbook = async () => {
     const shareUrl = `${window.location.origin}/guestbook/${id}/share`;
     navigator.clipboard.writeText(shareUrl);
+  };
+
+  useEffect(() => {
+    const initCanvas = () => {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.strokeStyle = color;
+          ctx.lineWidth = brushSize;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          setContext(ctx);
+        }
+      }
+    };
+    
+    initCanvas();
+    const timer1 = setTimeout(initCanvas, 100);
+    const timer2 = setTimeout(initCanvas, 500);
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, []);
+  
+  useEffect(() => {
+    if (context) {
+      context.strokeStyle = color;
+      context.lineWidth = brushSize;
+      context.lineCap = 'round';
+      context.lineJoin = 'round';
+    }
+  }, [color, brushSize, context]);
+  const startDrawing = (e) => {
+    if (!context) return;
+    
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    context.beginPath();
+    context.moveTo(x, y);
+    setIsDrawing(true);
+  };
+
+  const draw = (e) => {
+    if (!isDrawing || !context) return;
+    
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    context.lineTo(x, y);
+    context.stroke();
+  };
+
+  const stopDrawing = () => {
+    if (isDrawing) {
+      setIsDrawing(false);
+    }
+  };
+
+  const clearCanvas = () => {
+    if (context) {
+      context.fillStyle = 'white';
+      context.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    }
   };
 
   if (loading) {
@@ -205,6 +317,118 @@ export default function GuestbookPage({ params }) {
             Submit
           </button>
         </div>
+        <div style={{ 
+          padding: "4vh 3vw 3vh 3vw", 
+          border: "1px solid #ccc", 
+          borderRadius: "6px",
+          backgroundColor: "#fff",
+          marginTop: "2vh"
+        }}>
+          <h3 style={{ 
+            color: "#444", 
+            fontSize: "1.3rem",
+            margin: "0 0 2vh 0",
+            fontWeight: "300",
+            textAlign: "left"
+          }}>
+            Drawing Pad
+          </h3>
+          <div style={{ 
+            marginBottom: "2vh",
+            display: "flex",
+            gap: "2vw",
+            alignItems: "center"
+          }}>
+            <div>
+              <label style={{ fontSize: "0.9rem", color: "#666", marginRight: "1vw" }}>
+                Color:
+              </label>
+              <input
+                type="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                style={{ 
+                  width: "40px", 
+                  height: "30px", 
+                  border: "1px solid #ccc",
+                  borderRadius: "3px"
+                }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: "0.9rem", color: "#666", marginRight: "1vw" }}>
+                Size:
+              </label>
+              <input
+                type="range"
+                min="1"
+                max="20"
+                value={brushSize}
+                onChange={(e) => setBrushSize(parseInt(e.target.value))}
+                style={{ width: "80px" }}
+              />
+              <span style={{ fontSize: "0.8rem", color: "#666", marginLeft: "0.5vw" }}>
+                {brushSize}px
+              </span>
+            </div>
+            <button 
+              onClick={clearCanvas}
+              style={{
+                padding: "1vh 1vw",
+                backgroundColor: "#A8CCC9",
+                color: "white",
+                border: "none",
+                borderRadius: "3px",
+                cursor: "pointer",
+                fontSize: "1rem",
+                fontWeight: "400",
+                width: "auto",
+                marginRight: "1vw"
+              }}
+            > Clear
+            </button>
+          </div>
+          <canvas 
+            ref={canvasRef} 
+            width={350} 
+            height={200}
+            onMouseDown={startDrawing} 
+            onMouseMove={draw} 
+            onMouseUp={stopDrawing} 
+            onMouseLeave={stopDrawing}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              const touch = e.touches[0];
+              const mouseEvent = new MouseEvent('mousedown', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+              });
+              startDrawing(mouseEvent);
+            }}
+            onTouchMove={(e) => {
+              e.preventDefault();
+              const touch = e.touches[0];
+              const mouseEvent = new MouseEvent('mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+              });
+              draw(mouseEvent);
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              stopDrawing();
+            }}
+            style={{
+              border: "1px solid #ddd", 
+              borderRadius: "6px",
+              backgroundColor: "#fff",
+              cursor: "crosshair",
+              touchAction: "none",
+              width: "100%",
+              maxWidth: "350px"
+            }} 
+          />
+        </div>
       </div>
         <div style={{
           width: "50vw",
@@ -254,35 +478,58 @@ export default function GuestbookPage({ params }) {
                 border: "1px solid #ddd", 
                 borderRadius: "4px",
                 backgroundColor: "#fafafa",
-                borderLeft: "4px solid #A8CCC9 "
+                borderLeft: "4px solid #A8CCC9 ",
+                display: "flex",
+                gap: "2vw",
+                alignItems: "flex-start"
               }}
             >
-              <p style={{ 
-                margin: "0 0 1.5vh 0", 
-                fontSize: "0.95rem", 
-                lineHeight: "1.5",
-                color: "#444",
-                fontFamily: "Arial, sans-serif",
-                wordWrap: "break-word",
-                overflowWrap: "break-word",
-                whiteSpace: "pre-wrap"
-              }}>
-                "{entry.message}"
-              </p>
-              <div style={{
-                fontSize: "0.85rem",
-                color: "#666",
-                marginBottom: "0.8vh"
-              }}>
-                - {entry.name}
+              <div style={{ flex: 1 }}>
+                <p style={{ 
+                  margin: "0 0 1.5vh 0", 
+                  fontSize: "0.95rem", 
+                  lineHeight: "1.5",
+                  color: "#444",
+                  fontFamily: "Arial, sans-serif",
+                  wordWrap: "break-word",
+                  overflowWrap: "break-word",
+                  whiteSpace: "pre-wrap"
+                }}>
+                  "{entry.message}"
+                </p>
+                <div style={{
+                  fontSize: "0.85rem",
+                  color: "#666",
+                  marginBottom: "0.8vh"
+                }}>
+                  - {entry.name}
+                </div>
+                <small style={{ 
+                  color: "#888", 
+                  fontSize: "0.8rem"
+                }}>
+                  {new Date(entry.timestamp).toLocaleDateString()} at{" "}
+                  {new Date(entry.timestamp).toLocaleTimeString()}
+                </small>
               </div>
-              <small style={{ 
-                color: "#888", 
-                fontSize: "0.8rem"
-              }}>
-                {new Date(entry.timestamp).toLocaleDateString()} at{" "}
-                {new Date(entry.timestamp).toLocaleTimeString()}
-              </small>
+              {entry.image && (
+                <div style={{ 
+                  flexShrink: 0,
+                  maxWidth: "150px"
+                }}>
+                  <img 
+                    src={entry.image} 
+                    alt="Drawing" 
+                    style={{
+                      width: "100%",
+                      maxWidth: "150px",
+                      height: "auto",
+                      borderRadius: "4px",
+                      border: "1px solid #ddd"
+                    }}
+                  />
+                </div>
+              )}
             </div>
           ))
         )}
