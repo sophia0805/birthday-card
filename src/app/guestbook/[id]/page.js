@@ -73,27 +73,17 @@ export default function GuestbookPage({ params }) {
       },
       body: JSON.stringify(newEntry),
     });
-      
     const data = await response.json();
-    if (data.entries) {
-      setEntries(data.entries);
-      setNameInput("");
-      setMessageInput("");
-      setImageData(null);
-    }
-  };
-
-  const captureCanvasImage = () => {
-    if (canvasRef.current) {
-      const canvas = canvasRef.current;
-      const dataURL = canvas.toDataURL('image/png');
-      setImageData(dataURL);
-    }
+    setEntries(data.entries);
+    setNameInput("");
+    setMessageInput("");
+    setImageData(null);
   };
 
   const shareGuestbook = async () => {
     const shareUrl = `${window.location.origin}/guestbook/${id}/share`;
     navigator.clipboard.writeText(shareUrl);
+    window.alert("Link copied to clipboard!");
   };
 
   useEffect(() => {
@@ -238,11 +228,28 @@ export default function GuestbookPage({ params }) {
       <div style={{
         width: "50vw",
         padding: "12vh 4vw 2vh 3vw",
-        marginTop: "10vh",
+        marginTop: "2vh",
         backgroundColor: "#f5f5f5",
         minHeight: "90vh",
         overflowY: "auto"
       }}>
+        <button 
+            onClick={addEntry}
+            style={{
+              padding: "1.2vh 2.5vw",
+              backgroundColor: "#A8CCC9",
+              color: "white",
+              border: "none",
+              borderRadius: "3px",
+              cursor: "pointer",
+              fontSize: "1rem",
+              fontWeight: "400",
+              width: "auto",
+              minWidth: "8vw",
+              marginRight: "1vw"
+            }}>
+            Submit
+        </button>
         <div style={{ 
           padding: "4vh 3vw 3vh 3vw", 
           border: "1px solid #ccc", 
@@ -258,7 +265,7 @@ export default function GuestbookPage({ params }) {
             fontWeight: "300",
             textAlign: "left"
           }}>
-            Add your message
+            Add a message:
           </h3>
           <div style={{ marginBottom: "2vh" }}>
             <input
@@ -298,24 +305,6 @@ export default function GuestbookPage({ params }) {
               }}
             />
           </div>
-          <button 
-            onClick={addEntry}
-            style={{
-              padding: "1.2vh 2.5vw",
-              backgroundColor: "#A8CCC9",
-              color: "white",
-              border: "none",
-              borderRadius: "3px",
-              cursor: "pointer",
-              fontSize: "1rem",
-              fontWeight: "400",
-              width: "auto",
-              minWidth: "8vw",
-              marginRight: "1vw"
-            }}
-          >
-            Submit
-          </button>
         </div>
         <div style={{ 
           padding: "4vh 3vw 3vh 3vw", 
@@ -331,7 +320,7 @@ export default function GuestbookPage({ params }) {
             fontWeight: "300",
             textAlign: "left"
           }}>
-            Drawing Pad
+            Draw a picture:
           </h3>
           <div style={{ 
             marginBottom: "2vh",
@@ -433,7 +422,7 @@ export default function GuestbookPage({ params }) {
         <div style={{
           width: "50vw",
           padding: "12vh 3vw 2vh 2vw",
-          marginTop: "10vh",
+          marginTop: "5vh",
           backgroundColor: "#ffffff",
           minHeight: "90vh",
           overflowY: "auto"

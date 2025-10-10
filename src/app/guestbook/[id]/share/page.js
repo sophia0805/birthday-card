@@ -19,10 +19,10 @@ export default function SharePage({ params }) {
           }
           setLoading(false);
         })
-      .catch(error => {
-        console.error("Error loading guestbook:", error);
-        setLoading(false);
-      });
+        .catch(error => {
+          console.error("Error loading guestbook:", error);
+          setLoading(false);
+        });
     });
   }, [params]);
 
@@ -131,114 +131,140 @@ export default function SharePage({ params }) {
 
   return (
     <div style={{ position: "relative" }}>
-    <canvas
-      ref={canvasRef}
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        zIndex: -1,
-        pointerEvents: "none"
-      }}
-    />
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          zIndex: -1,
+          pointerEvents: "none"
+        }}
+      />
             
-    <div style={{
-      padding: "12vh 3vw 2vh 2vw",
-      backgroundColor: "rgba(0, 0, 0, 0)",
-      minHeight: "90vh",
-      overflowY: "auto",
-      position: "relative",
-      zIndex: 1
-    }}>
-    <img src="/cake.png" alt="Birthday Cake" style={{
-      width: "30vh", 
-      height: "30vh", 
-      position: "absolute", 
-      top: "2vh", 
-      right: "3vw" 
-    }} />
-    <h3 style={{ 
-      color: "#333", 
-      fontSize: "7.5rem",
-      textAlign: "left",
-      margin: "0 0 0 0",
-      fontWeight: "300",
-      fontFamily: "Georgia, serif"
-    }}>
-    Happy Birthday!</h3>
-    <h4 style={{ 
-      color: "#333", 
-      fontSize: "1.5rem",
-      textAlign: "left",
-      margin: "0 0 0 0",
-      fontWeight: "300",
-      fontFamily: "Georgia, serif"
-    }}>
-    You have {entries.length} guestbook messages: </h4>
-    {entries.length === 0 ? (
       <div style={{
-        textAlign: "left", 
-        padding: "6vh 2vw",
-        backgroundColor: "#f9f9f9",
-        borderRadius: "4px",
-        border: "1px solid #ddd",
-        marginTop: "2vh"
+        padding: "12vh 3vw 2vh 2vw",
+        backgroundColor: "rgba(0, 0, 0, 0)",
+        minHeight: "90vh",
+        overflowY: "auto",
+        position: "relative",
+        zIndex: 1
       }}>
-      <p style={{ 
-        color: "#666", 
-        fontSize: "1rem",
-        margin: "0",
-        fontStyle: "italic"
-      }}>
-      No messages yet</p>
-      </div>
+        <img src="/cake.png" alt="Birthday Cake" style={{
+          width: "30vh", 
+          height: "30vh", 
+          position: "absolute", 
+          top: "2vh", 
+          right: "3vw" 
+        }} />
+        <h3 style={{ 
+          color: "#333", 
+          fontSize: "7.5rem",
+          textAlign: "left",
+          margin: "0 0 0 0",
+          fontWeight: "300",
+          fontFamily: "Georgia, serif"
+        }}>
+          Happy Birthday!
+        </h3>
+        <h4 style={{ 
+          color: "#333", 
+          fontSize: "1.5rem",
+          textAlign: "left",
+          margin: "0 0 0 0",
+          fontWeight: "300",
+          fontFamily: "Georgia, serif"
+        }}>
+          You have {entries.length} guestbook messages:
+        </h4>
+        {entries.length === 0 ? (
+          <div style={{
+            textAlign: "left", 
+            padding: "6vh 2vw",
+            backgroundColor: "#f9f9f9",
+            borderRadius: "4px",
+            border: "1px solid #ddd",
+            marginTop: "2vh"
+          }}>
+            <p style={{ 
+              color: "#666", 
+              fontSize: "1rem",
+              margin: "0",
+              fontStyle: "italic"
+            }}>
+              No messages yet
+            </p>
+          </div>
         ) : (
           entries
             .filter(entry => entry.name && entry.message)
             .map((entry, index) => (
-            <div 
-              key={index} 
-              style={{ 
-                marginBottom: "3vh", 
-                padding: "2vh 2.5vw", 
-                border: "1px solid #ddd", 
-                borderRadius: "4px",
-                backgroundColor: "#fafafa",
-                borderLeft: "4px solid #A8CCC9"
-              }}
-            >
-              <p style={{ 
-                margin: "0 0 1.5vh 0", 
-                fontSize: "0.95rem", 
-                lineHeight: "1.5",
-                color: "#444",
-                fontFamily: "Arial, sans-serif",
-                wordWrap: "break-word",
-                overflowWrap: "break-word",
-                whiteSpace: "pre-wrap"
-              }}>
-              "{entry.message}"
-              </p>
-              <div style={{
-                fontSize: "0.85rem",
-                color: "#666",
-                marginBottom: "0.8vh"
-              }}>
-              - {entry.name}
+              <div 
+                key={index} 
+                style={{ 
+                  marginBottom: "3vh", 
+                  padding: "2vh 2.5vw", 
+                  border: "1px solid #ddd", 
+                  borderRadius: "4px",
+                  backgroundColor: "#fafafa",
+                  borderLeft: "4px solid #A8CCC9 ",
+                  display: "flex",
+                  gap: "2vw",
+                  alignItems: "flex-start"
+                }}
+              >
+                <div style={{ flex: 1 }}>
+                  <p style={{ 
+                    margin: "0 0 1.5vh 0", 
+                    fontSize: "0.95rem", 
+                    lineHeight: "1.5",
+                    color: "#444",
+                    fontFamily: "Arial, sans-serif",
+                    wordWrap: "break-word",
+                    overflowWrap: "break-word",
+                    whiteSpace: "pre-wrap"
+                  }}>
+                    "{entry.message}"
+                  </p>
+                  <div style={{
+                    fontSize: "0.85rem",
+                    color: "#666",
+                    marginBottom: "0.8vh"
+                  }}>
+                    - {entry.name}
+                  </div>
+                  <small style={{ 
+                    color: "#888", 
+                    fontSize: "0.8rem"
+                  }}>
+                    {new Date(entry.timestamp).toLocaleDateString()} at{" "}
+                    {new Date(entry.timestamp).toLocaleTimeString()}
+                  </small>
+                </div>
+                {entry.image && (
+                  <div style={{ 
+                    flexShrink: 0,
+                    maxWidth: "150px"
+                  }}>
+                    <img 
+                      src={entry.image} 
+                      alt="Drawing" 
+                      style={{
+                        width: "100%",
+                        maxWidth: "150px",
+                        height: "auto",
+                        borderRadius: "4px",
+                        border: "1px solid #ddd"
+                      }}
+                    />
+                  </div>
+                )}
               </div>
-                <small style={{ 
-                  color: "#888", 
-                  fontSize: "0.8rem"
-                }}>
-                {new Date(entry.timestamp).toLocaleDateString()} at{" "}
-                {new Date(entry.timestamp).toLocaleTimeString()}
-                </small>
-            </div>
             ))
-          )}
-        </div>
+        )}
+      </div>
     </div>
   );
 }

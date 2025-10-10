@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb';
 const uri = process.env.MONGODB_URI;
 const options = {
   tls: true,
-  tlsAllowInvalidCertificates: true, // use only if you're connecting to dev/self-hosted without a CA
+  tlsAllowInvalidCertificates: true,
 };
 
 let client;
