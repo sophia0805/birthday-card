@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# birthday guestbook | [![Athena Award Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Faward.athena.
+hackclub.com%2Fapi%2Fbadge)](https://award.athena.hackclub.com?utm_source=readme)
 
-## Getting Started
+create a birthday guestbook for a friend and get everyone to sign it! for the level up challenge
 
-First, run the development server:
+## features
+- sketchpad where you can draw with any color and any size brush
+- message inputs for birthday wishes and names
+- image storage using imgbb api to save drawings
+- share links to send to friends and family
+- mongodb storage for consistent guestbook entries
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## usage
+1. create a new guestbook and get a unique link
+2. share the link with friends and family
+3. people can leave messages and draw pictures
+4. view all entries in a display link
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## installation  
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/sophia0805/birthday-card
+   cd birthday-card
+   ```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. **Create a .env.local**
+    ```env
+    MONGODB_URI=""
+    IMGBBKEY=""
+    ```
 
-## Learn More
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+5. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## history
+this was my first time using a mongo database to store data. i struggled with debugging tls errors before finding out that you have to add your ip address to the whitelist
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## finished product
+![](https://hc-cdn.hel1.your-objectstorage.com/s/v3/5d8ff58345559d95ad4930fb6a2c208ac6ca4b21_image.png)
