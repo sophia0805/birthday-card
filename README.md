@@ -42,7 +42,7 @@ create a birthday guestbook for a friend and get everyone to sign it! for the le
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## history
-this was my first time using a mongo database to store data. i struggled with debugging tls errors before finding out that you have to add your ip address to the whitelist
+this was my first time using a mongo database to store data. i struggled with debugging tls errors before finding out that you have to add your ip address to the whitelist and deploying with vercel.
 
 ## finished product
 ![](https://hc-cdn.hel1.your-objectstorage.com/s/v3/5d8ff58345559d95ad4930fb6a2c208ac6ca4b21_image.png)
