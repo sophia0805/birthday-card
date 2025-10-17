@@ -15,18 +15,22 @@ export default function GuestbookPage({ params }) {
   const [context, setContext] = useState(null);
 
   useEffect(() => {
-    params.then(({ id }) => {
-      setId(id);
-      fetch(`/api/guestbook/${id}`)
-        .then(response => response.json())
-        .then(data => {
-          console.log("Guestbook loaded:", data);
-          if (data.entries) {
-            setEntries(data.entries);
-          }
-          setLoading(false);
-        });
-    });
+    const { id: routeId } = params;
+    setId(routeId);
+    fetch(`/api/guestbook/${routeId}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Guestbook loaded:", data);
+        if (data.entries) {
+          setEntries(data.entries);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load guestbook:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [params]);
 
   const addEntry = async () => {
